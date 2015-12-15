@@ -48,6 +48,14 @@ module Sensu
       @@autorun = false
     end
 
+    def self.filter_settings(settings=nil)
+      if settings
+        @filter_settings = settings
+      else
+        @filter_settings
+      end
+    end
+
     at_exit do
       if @@autorun
         handler = @@autorun.new
@@ -121,6 +129,10 @@ module Sensu
 
       if settings['sensu_plugin'].is_a?(Hash)
         defaults.merge!(settings['sensu_plugin'])
+      end
+
+      if self.class.filter_settings.is_a?(Hash)
+        defaults.merge!(self.class.filter_settings)
       end
 
       occurrences = (@event['check']['occurrences'] || defaults['occurrences']).to_i
